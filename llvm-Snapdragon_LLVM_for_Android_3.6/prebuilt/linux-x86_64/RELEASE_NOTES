@@ -1,0 +1,226 @@
+This is the release of Snapdragon LLVM ARM C/C++ Toolchain version 3.6. This is
+a cross toolchain built to run on x86 64-bit/32-bit Ubuntu Linux (versions 10.04 and
+later) and Windows platform (Windows 7 32-bit and 64-bit). This Snapdragon LLVM
+ARM Compiler will generate code only for ARM targets and will not generate code
+for any of the other targets supported by llvm.org LLVM.
+
+The version 3.6 of Snapdragon LLVM ARM Compiler is based off the llvm.org 3.6
+release branch. The Snapdragon LLVM ARM Toolchain 3.6 release includes proprietary
+features and optimizations that are not available in the llvm.org release.
+
+The Snapdragon LLVM ARM Compiler uses the integrated assembler for assembling
+and relies on GNU tools for linking.
+
+NOTE: GLIBCXX_3.4.18 or higher is required to run Snapdragon LLVM 3.6 on Ubuntu
+x86 64-bit hosts; this library is typically available as part of Ubuntu
+distribution or GCC-4.8 x86 distributions. Also, on Linux, if you observe any
+error due to missing libatomic.so.1 (clang++: error while loading shared
+libraries: libatomic.so.1: cannot open shared object file: No such file or
+directory), please install the libatomic library.
+
+The complete user guide for this release of the Snapdragon LLVM ARM Compiler
+is avaialble as part of your download package under 
+llvm-Snapdragon_LLVM_for_Android_3.6/prebuilt/<platform>/Snapdragon
+_LLVM_ARM_36_User_Guide.pdf.
+
+Please post all questions about this release on
+http://developer.qualcomm.com/llvm-forum.
+
+The following are some of the key features in the 3.6 version compared to the
+3.5.1 version:
+
+1. Optimizations for ARMv8 64-bit mode for the Cortex-a57 processor: Snapdragon
+LLVM ARM 3.6 Compiler now supports optimized code generation for both AArch32
+and AArch64 (64-bit) modes for the Cortex-a57 core. This includes optimizations
+exploiting latency and timing characteristics of Cortex-a57 micro-architecture.
+
+2. Support for new profilers: The Snapdragon LLVM ARM 3.6 release includes two
+new profiling mechanisms - Instrumentation based profiler and Sampling based
+profiler. Please refer to section 4.8 of the Snapdragon LLVM ARM user guide for
+more details on these profilers.
+
+3. Support for Profile Guided Optimization (PGO): The 3.6 release supports
+optimizations based on profile generation mechanisms described above. Please
+refer to section 4.8 of the Snapdragon LLVM ARM user guide.
+
+4. Sanitizers:  The Snapdragon LLVM ARM 3.6 compiler supports memory sanitizer
+(MSan) for Linux and Android targets, as well as undefined behaviour Sanitizer
+(UBSan) for baremetal targets that do not have full fledged Linux-like
+capabilities. This release also supports the address sanitizer (ASan) for
+64-bit Android platforms. Please refer to sections 5.3 and 5.4 of the
+Snapdragon ARM LLVM user guide.
+
+5. Pragmas for Auto vectorization and Auto parallelization: Programmers can now
+specify which loops to vectorize/not-vectorize and parallelize/not-parallelize
+using loop optimization pragmas. Please refer to section 4.9.1 of the
+Snapdragon LLVM ARM document for more details
+
+Options:
+
+To find out the most common options, please pass -help flag to the clang
+driver. This will report the Snapdragon LLVM ARM specific options and
+general ARM options first, before listing target independent options
+available in Snapdragon LLVM ARM Compiler.
+
+Compiler options for best performance:
+
+For 64-bit applications, we recommend using "-Ofast -mcpu=cortex-a57" options
+for best performance on Cortex-a57 cores, and "-Ofast -mcpu=cortex-a53" for
+best performance on Cortex-a53 cores.
+
+For 32-bit, we recommend using the "-Ofast -mcpu=krait" options for best
+performance of your application on Krait cores. For non-Krait 32-bit cores, we
+recommend using the "-Ofast" option. If you would like to avoid the generation
+of Krait specific instructions (hardware divide, fused-mac) to enable running
+on a variety of ARMv7 cores, but still optimize for best performance on Krait
+cores, we recommend the "-Ofast -mtune=krait -march=armv7-a" option list.
+
+The -Ofast option enables several high performance optimizations such as
+Auto-vectorizer. Please refer to section 3.4.19 of the Snapdragon LLVM ARM
+Compiler guide for more details.
+
+Compiler options for smallest code-size:
+
+We recommending using the "-Osize -mthumb" options to generate the most compact
+code with the Snapdragon LLVM 3.6 compiler. Please refer to section 3.4.19 for
+more details on the -Osize optimization level
+
+Compiling for AArch64:
+
+To compile for AArch64 (ARMv8 64-bit mode), please pass 
+
+-target aarch64-linux-gnu
+
+option to clang.
+
+Compiling for AArch32:
+
+To compile for AArch32 please pass
+
+-target armv8-linux-gnueabi
+
+option to clang. Note that even though AArch32 ISA is fully backward compatible
+with ARMv7 ISA, there are new instructions in AArch32 ISA compared to ARMv7
+ISA. This means that AArch32 executables cannot be executed on ARMv7 cores such
+as Krait.
+
+Please refer to section 3.4.19 of the Snapdragon LLVM ARM Compiler user guide to
+learn about various optimization flags.
+
+LLVM's Support for GCC command line options:
+
+Most of the commonly used GCC options are supported by LLVM as well. A detailed
+list of options supported is listed in chapter 3 of the Snapdragon LLVM ARM
+Compiler user guide.  
+
+
+Using Snapdragon LLVM ARM Compiler 3.6 with Android NDK:
+
+The Snapdragon LLVM ARM Compiler 3.6 can be used as a drop-in replacement
+for LLVM shipped as part of the Android NDK.
+
+1. Snapdragon LLVM ARM Compiler 3.6 has been verified to work with Android NDK
+version r10d for Windows and Linux (32 bit and 64 bit).
+
+2. On Windows, it is assumed that the user has Cygwin setup as required by the
+Android NDK instructions. Also on Windows, Microsoft Visual C++ 2013 x86
+Redistributable is required in order to use the Windows version of Snapdragon
+LLVM ARM 3.6. If the invocation of clang.exe results in a "Missing DLL" message
+popup on your Windows system, you are likely missing the Redistributable dlls.
+Please install the 32-bit version of MSVC++ redistributables if they are
+reported missing. If your system does not already have the required dll, you
+can download and install it from the following link:
+
+https://www.microsoft.com/en-us/download/details.aspx?id=40784
+
+Click "Download" and select "vcredist_x86.exe" to install the 32-bit version of
+MSVC++ redistributable required for Snapdragon LLVM ARM 3.6.
+
+3. On Linux, if you observe any error due to missing libatomic.so.1
+(clang++: error while loading shared libraries: libatomic.so.1: cannot open
+shared object file: No such file or directory), please install the libatomic
+library.
+
+4. On Windows and Linux it is recommended that you extract the Android NDK
+under a directory which *does not* contain spaces, like:
+
+C:\android-ndk-r10d
+/local/mnt/workspace/android-ndk-r10d
+
+This directory is referred to as <NDK_ROOT> in this README.
+
+5. Unzip Snapdragon-llvm-3.6-compiler-windows.zip or untar
+Snapdragon-llvm-3.6-compiler-linux64.tar.gz under <NDK_ROOT>/toolchains.
+
+6. By default, it is assumed that the user has Android NDK r10d and hence for
+linking, arm-linux-androideabi-4.8 will be used for ARMv7 and
+aarch64-linux-android-4.9 will be used for AArch64.
+
+7. The Snapdragon LLVM ARM 3.6 plugin is designed to work with both 32-bit and 64-bit
+versions of the NDK as described below:
+
+For generating ARMv7 code, invoke your compilation line as follows:
+
+ndk-build NDK_TOOLCHAIN_VERSION=snapdragonclang3.6 APP_ABI="armeabi-v7a" -C <some_project>
+
+For generating AArch64 (64-bit) code, invoke your compilation line as follows:
+
+ndk-build NDK_TOOLCHAIN_VERSION=snapdragonclang3.6 APP_ABI="arm64-v8a" -C <some_project>
+
+8. If you want to specify your custom flags to the compiler in order to
+override the default flags you can use the variable APP_CFLAGS as follows:
+
+ndk-build NDK_TOOLCHAIN_VERSION=snapdragonclang3.6 APP_ABI="armeabi-v7a" APP_CFLAGS="-O3" -C <some_project>
+
+Similarly, to specify custom flags for the linker you can use the flag APP_LDFLAGS.
+
+9. We STRONGLY RECOMMEND the following command line flags for best performance, to be
+set through APP_CFLAGS, for performance. These options ensure that all
+high performance optimization features in the Snapdragon LLVM compiler are
+enabled to deliver maximum performance in 32-bit and 64-bit modes. For this release,
+if you continue to use the default Android NDK compatible flags, you may see performance
+regression.
+
+  ARMv7:
+	If your project does not require precise math, please set
+	APP_CFLAGS="-Ofast -mtune=krait"
+
+	If your project requires IEEE 754 floating point compliance, please set
+	APP_CFLAGS="-O3  -mtune=krait"
+
+  AArch64:
+	If your project does not require precise math, please set
+	APP_CFLAGS="-Ofast"
+
+	If your project requires IEEE 754 floating point compliance, please set
+	APP_CFLAGS="-O3"
+
+10. A standalone toolchain for the Android NDK environment using the Snapdragon
+LLVM ARM compiler can be created using the make-standalone-toolchain.sh Android
+NDK utility. For example, to create a standalone toolchain for Linux 64-bit
+environment, the following command can be used:
+
+For ARMv7:
+
+<NDK_ROOT>/build/tools/make-standalone-toolchain.sh --ndk-dir=<NDK_ROOT> \
+--platform=android-19 --arch=arm --install-dir=<some_dir> \
+--toolchain=arm-linux-androideabi-4.8 \
+--llvm-version=Snapdragon_LLVM_for_Android_3.6 --system=linux-x86_64
+
+The above command line specifies that android-19 platform directory must be
+copied to be used as the standalone sysroot and GCC-4.8 toolchain must be
+copied to be used as the linker and for other binutils such as objdump.
+
+For AArch64:
+
+<NDK_ROOT>/build/tools/make-standalone-toolchain.sh --ndk-dir=<NDK_ROOT> \
+--platform=android-21 --arch=arm64 --install-dir=<some_dir> \
+--toolchain=aarch64-linux-android-4.9 \
+--llvm-version=Snapdragon_LLVM_for_Android_3.6 --system=linux-x86_64
+
+The above command line specifies that android-21 platform directory must be
+copied to be used as the standalone sysroot and GCC-4.9 toolchain must be
+copied to be used as the linker and for other binutils such as objdump.
+
+Contacts & Bug Reporting
+http://developer.qualcomm.com/llvm-forum
